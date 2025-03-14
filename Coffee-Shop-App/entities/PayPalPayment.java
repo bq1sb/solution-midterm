@@ -13,27 +13,27 @@ class PayPalPayment implements PaymentMethod {
 
     public boolean processPayment(double amount) {
         try {
-            // 1️⃣ Получить access_token
+            // Получить access_token
             String accessToken = getAccessToken();
             if (accessToken == null) {
                 System.out.println("Ошибка: Не удалось получить access token.");
                 return false;
             }
 
-            // 2️⃣ Создать платеж
+            // Создать платеж
             String approvalUrl = createPayment(accessToken, amount);
             if (approvalUrl == null) {
                 System.out.println("Ошибка: Не удалось создать платеж.");
                 return false;
             }
 
-            // 3️⃣ Попросить пользователя оплатить
+            // Попросить пользователя оплатить
             System.out.println("Перейдите по этой ссылке для оплаты: " + approvalUrl);
             System.out.print("После оплаты введите Payer ID из URL: ");
             Scanner scanner = new Scanner(System.in);
             String payerId = scanner.nextLine();
 
-            // 4️⃣ Завершить платеж
+            // Завершить платеж
             return executePayment(accessToken, payerId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ class PayPalPayment implements PaymentMethod {
         }
     }
 
-    // --- Получить Access Token ---
+    // Получить Access Token
     private String getAccessToken() throws IOException {
         String auth = CLIENT_ID + ":" + CLIENT_SECRET;
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
@@ -76,7 +76,7 @@ class PayPalPayment implements PaymentMethod {
         return jsonResponse.getString("access_token");
     }
 
-    // --- Создать платеж ---
+    //  Создать платеж
     private String createPayment(String accessToken, double amount) throws IOException {
         URL url = new URL("https://api-m.sandbox.paypal.com/v1/payments/payment");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -86,7 +86,7 @@ class PayPalPayment implements PaymentMethod {
         conn.setRequestProperty("Accept", "application/json");
         conn.setDoOutput(true);
 
-        // ✅ Используем BigDecimal для точного представления суммы
+        // Используем BigDecimal для точного представления суммы
         BigDecimal formattedAmount = BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         String jsonInputString = new JSONObject()
@@ -95,7 +95,7 @@ class PayPalPayment implements PaymentMethod {
                 .put("transactions", new JSONArray()
                         .put(new JSONObject()
                                 .put("amount", new JSONObject()
-                                        .put("total", formattedAmount.toString())  // ✅ PayPal требует строку
+                                        .put("total", formattedAmount.toString())  // PayPal требует строку
                                         .put("currency", "USD"))
                                 .put("description", "Coffee purchase")))
                 .put("redirect_urls", new JSONObject()
@@ -139,10 +139,9 @@ class PayPalPayment implements PaymentMethod {
     }
 
 
-    // --- Завершить платеж ---
+    // Завершить платеж
     private boolean executePayment(String accessToken, String payerId) throws IOException {
-        // ⚠ Здесь должен быть реальный Payment ID, полученный после создания платежа.
-        String paymentId = "ВАШ_PAYMENT_ID"; // TODO: заменить на реальный ID
+        String paymentId = "ВАШ_PAYMENT_ID";
 
         URL url = new URL("https://api-m.sandbox.paypal.com/v1/payments/payment/" + paymentId + "/execute");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
