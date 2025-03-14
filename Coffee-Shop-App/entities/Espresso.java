@@ -1,5 +1,3 @@
-package Coffee;
-
 class Espresso implements Coffee {
     private CoffeeSize size;
     Espresso(CoffeeSize size) {this.size = size;}

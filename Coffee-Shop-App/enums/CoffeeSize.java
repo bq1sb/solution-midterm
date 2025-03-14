@@ -1,4 +1,3 @@
-package Coffee;
 
 enum CoffeeSize {
     Small(1.0), medium(1.5), large(2.0);
